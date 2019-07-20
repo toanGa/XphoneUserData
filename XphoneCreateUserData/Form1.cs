@@ -13,8 +13,10 @@ namespace XphoneCreateUserData
 {
     public partial class Form1 : Form
     {
-        UInt16[] DataUint16;
-        UInt16[] DataSaved;
+        // Need synth with OMAP define
+        const string FILE_LANG_0 = "text-eng.c";
+        const string FILE_LANG_1 = "text-vietnamese.c";
+
 
         string HeaderFile;
         List<String> SourceFiles;
@@ -27,30 +29,7 @@ namespace XphoneCreateUserData
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            string fileName = @"E:\git-server\3.COMPARE_CODE\2\os\source\libs\text\text.h";
-            string sourceFileName = @"E:\git-server\3.COMPARE_CODE\2\os\source\libs\text\text-eng.c";
-            string content = File.ReadAllText(fileName);
-            string srcContent = File.ReadAllText(sourceFileName);
-            List<TextObj> textObjs = TextObjectParser.ParseDefineFile(content);
-            List<UInt16[]> textDatas = new List<UInt16[]>();
 
-            int numTextObjs = textObjs.Count;
-
-            DataSaved = new UInt16[0];
-
-            for (int i = 0; i < numTextObjs; i++)
-            {
-                UInt16[] contentParser = LanguageParser.ParseTextObjectContent(textObjs[i], srcContent);
-                textDatas.Add(contentParser);
-
-                Console.WriteLine(contentParser.Length);
-                DataSaved = CombineData(DataSaved, contentParser);
-            }
-
-            byte[] result = new byte[DataSaved.Length * sizeof(UInt16)];
-            Buffer.BlockCopy(DataSaved, 0, result, 0, result.Length);
-
-            File.WriteAllBytes("text_en.bin", result);
         }
 
         public static UInt16[] CombineData(UInt16[] first, UInt16[] second)
@@ -69,28 +48,48 @@ namespace XphoneCreateUserData
             return ret;
         }
 
+        /// <summary>
+        /// get order language by name with out full path
+        /// </summary>
+        /// <param name="fileNameOnly"></param>
+        /// <returns></returns>
+        int GetOrderByNameFile(string fileNameOnly)
+        {
+            int order = -1;
+            if(fileNameOnly == FILE_LANG_0)
+            {
+                order = 0;
+            }
+            else if(fileNameOnly == FILE_LANG_1)
+            {
+                order = 1;
+            }
+            return order;
+        }
+
         private void Button2_Click(object sender, EventArgs e)
         {
-            byte[] data = File.ReadAllBytes("text_en.bin");
-            DataUint16 = new UInt16[data.Length / 2];
-            Buffer.BlockCopy(data, 0, DataUint16, 0, data.Length);
-            bool readConfirm = true;
-            for(int i = 0; i < DataUint16.Length; i++)
-            {
-                if(DataUint16[i] != DataSaved[i])
-                {
-                    readConfirm = false;
-                    break;
-                }
-            }
+            byte[] data = File.ReadAllBytes("sys_text.bin");
 
-            if(readConfirm)
+            int[] numLang = new int[1];
+            int[] LangSize = new int[1];
+
+            Buffer.BlockCopy(data, 0, numLang, 0, 4);
+            Buffer.BlockCopy(data, 4, LangSize, 0, 4);
+            for(int i = 0; i < numLang[0]; i++)
             {
-                MessageBox.Show("Confirm OK");
-            }
-            else
-            {
-                MessageBox.Show("Confirm wrong data");
+                byte[] lang_header = new byte[100 + 4];
+                byte[] lang_content = new byte[LangSize[0]];
+                int[] lang_order = new int[1];
+                byte[] lang_name = new byte[100];
+               
+                Buffer.BlockCopy(data, 4 + 4 + i * (100 + 4 + LangSize[0]), lang_header, 0, lang_header.Length);
+                Buffer.BlockCopy(data, 4 + 4 + i * (100 + 4 + LangSize[0]) + lang_header.Length, lang_content, 0, lang_content.Length);
+
+                Buffer.BlockCopy(lang_header, 0, lang_order, 0, 4);
+                Buffer.BlockCopy(lang_header, 4, lang_name, 0, lang_name.Length);
+                File.WriteAllBytes("test.bin", lang_content);
+
             }
         }
 
@@ -194,24 +193,25 @@ namespace XphoneCreateUserData
                     dataSinggleLang = CombineData(dataSinggleLang, contentParser);
                 }
 
-                byte[] result = new byte[dataSinggleLang.Length * sizeof(UInt16)];
-                Buffer.BlockCopy(dataSinggleLang, 0, result, 0, result.Length);
+                byte[] dataSinggleLangU8 = new byte[dataSinggleLang.Length * sizeof(UInt16)];
+                Buffer.BlockCopy(dataSinggleLang, 0, dataSinggleLangU8, 0, dataSinggleLangU8.Length);
+                byte[] langPkg = new byte[0];
 
                 string fileOnly = Path.GetFileNameWithoutExtension(sourceFileName);
                 byte[] nameFileByArr = new byte[100];
                 byte[] nameTmp = Encoding.ASCII.GetBytes(fileOnly);
-                int[] orderInt = new int[1] { orderFake };
+                int[] orderInt = new int[1] { GetOrderByNameFile(Path.GetFileName(sourceFileName))};
                 byte[] orderByte = new byte[sizeof(int)];
-                Buffer.BlockCopy(dataSinggleLang, 0, orderByte, 0, orderByte.Length);
+                Buffer.BlockCopy(nameTmp, 0, nameFileByArr, 0, nameTmp.Length);
 
-                Buffer.BlockCopy(orderInt, 0, nameFileByArr, 0, nameTmp.Length);
+                Buffer.BlockCopy(orderInt, 0, orderByte, 0, orderByte.Length);
 
-                result = CombineData(result, nameFileByArr);
-                result = CombineData(result, orderByte);
+                langPkg = CombineData(langPkg, orderByte); // Order first
+                langPkg = CombineData(langPkg, nameFileByArr); // then name
+                langPkg = CombineData(langPkg, dataSinggleLangU8); // then content
+                //File.WriteAllBytes(fileOnly + ".bin", result);
 
-                File.WriteAllBytes(fileOnly + ".bin", result);
-
-                compressedData = CombineData(compressedData, result);
+                compressedData = CombineData(compressedData, langPkg);
             }
 
             File.WriteAllBytes("sys_text.bin", compressedData);

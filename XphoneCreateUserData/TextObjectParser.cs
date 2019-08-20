@@ -10,6 +10,88 @@ namespace XphoneCreateUserData
     {
         public string Name;
         public int Length;
+        public string Unicode;// UTF16 of Variable
+        public byte[] ByteArray
+        {
+            get
+            {
+                return ToIntArr(Unicode);
+            }
+        }
+
+        public string CodeString
+        {
+            get
+            {
+                string code = string.Format("init_string(text.{0} ,\"{1}\"); /* {2} */", Name, Unicode, ReadableString);
+                return code;
+            }
+        }
+
+        public string ReadableString
+        {
+            get
+            {
+                string Readable = Encoding.BigEndianUnicode.GetString(ByteArray);
+                return Readable;
+            }
+        }
+
+        public static byte[] ToIntArr(string unicode)
+        {
+            List<byte> listByte = new List<byte>();
+            int len = unicode.Length;
+            byte byte1;
+            byte byte2;
+            string var;
+            int intVar;
+
+            for (int i = 0; i < len; i += 4)
+            {
+                var = unicode.Substring(i, 4);
+                intVar = Convert.ToInt32(var, 16);
+
+                byte1 = (byte)((intVar >> 8) & 0xFF);
+                byte2 = (byte)(intVar & 0xFF);
+
+                listByte.Add((byte)(byte1));
+                listByte.Add((byte)(byte2));
+            }
+
+            return listByte.ToArray();
+        }
+
+        public static string ToStringUnicode(byte[] array)
+        {
+            int i;
+            int len = array.Length;
+            string s = "";
+            string hexStr;
+            for (i = 0; i < len; i += 1)
+            {
+                hexStr = array[i].ToString("X");
+                if (hexStr.Length == 1)
+                {
+                    hexStr = '0' + hexStr;
+                }
+                s += hexStr;
+            }
+
+            return s;
+        }
+
+        public static string GetInitCode(List<TextObj> textObjs)
+        {
+            string initObjsStr = "\r\n";
+            string shiftLine = "    ";
+            int numObjs = textObjs.Count;
+            int i;
+            for (i = 0; i < numObjs; i++)
+            {
+                initObjsStr += shiftLine + textObjs[i].CodeString + "\r\n";
+            }
+            return initObjsStr + "\r\n";
+        }
     }
 
     class TextObjectParser

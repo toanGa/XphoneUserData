@@ -50,13 +50,18 @@ namespace XphoneCreateUserData
                     int idxCloseContent = idxOpenContent + 1 + lineContent.Substring(idxOpenContent + 1).IndexOf("\"");
 
                     string textDefine = lineContent.Substring(idxOpen + 1, idxSeperate - idxOpen - 1);
-                    if (textDefine.Replace(TEXT_VARIABLE, "").Replace(".", "").Trim() == textObj.Name)
+                    if(textDefine.IndexOf(TEXT_VARIABLE + ".") == 0)
+                    {
+                        string preStr = TEXT_VARIABLE + ".";
+                        textDefine = textDefine.Substring(preStr.Length);
+                    }
+
+                    if (textDefine.Trim() == textObj.Name)
                     {
                         string contentDefine = lineContent.Substring(idxOpenContent + 1, idxCloseContent - idxOpenContent - 1);
                         copy_text(objContent, contentDefine);
                         break;
                     }
-                    
                 }
             }
 

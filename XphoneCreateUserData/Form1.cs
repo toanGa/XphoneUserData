@@ -328,7 +328,7 @@ namespace XphoneCreateUserData
             FolderBrowserDialog dlg = new FolderBrowserDialog();
             dlg.Description = "Select folder contain system text source file";
             dlg.ShowNewFolderButton = true;
-
+            
             DialogResult result = dlg.ShowDialog();
             if(result == DialogResult.OK)
             {
@@ -421,6 +421,8 @@ namespace XphoneCreateUserData
             }
 
             File.WriteAllBytes("sys_text.bin", compressedData);
+
+            MessageBox.Show("Genenate success: " + Path.GetFullPath("sys_text.bin"));
         }
 
         private void EditConfigToolStripMenuItem_Click(object sender, EventArgs e)

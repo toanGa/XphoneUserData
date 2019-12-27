@@ -77,6 +77,7 @@
             this.textBoxTextFoder.Name = "textBoxTextFoder";
             this.textBoxTextFoder.Size = new System.Drawing.Size(495, 20);
             this.textBoxTextFoder.TabIndex = 2;
+            this.textBoxTextFoder.TextChanged += new System.EventHandler(this.textBoxTextFoder_TextChanged);
             // 
             // buttonOpenTextFoder
             // 

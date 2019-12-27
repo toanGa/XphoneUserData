@@ -34,7 +34,7 @@ namespace XphoneCreateUserData
         public Form1()
         {
             InitializeComponent();
-
+            textBoxTextFoder.Text = "C://CTY//Xphone//os//source//libs//text";
             SetDefaultLanguage();
 
             if(File.Exists(FILE_LANG_CFG))
@@ -113,13 +113,26 @@ namespace XphoneCreateUserData
             }
             File.WriteAllText(FileName, s);
         }
-
+        void setDefault_text(List<TextObj> textObjs)
+        {
+            string t = null;
+            for (int i=0;i<textObjs.Count;i++)
+            {
+                string text = textObjs[i].Name;
+                t += "text." + text + "[sizeof(text." + text + ") / 2 - 1] = NULL;" +"\n";
+            }
+            if(File.Exists("setDefault_text.txt"))
+            {
+                File.Delete("setDefault_text.txt");
+            }
+            File.WriteAllText("setDefault_text.txt", t);
+        }
 
         private void Button1_Click(object sender, EventArgs e)
         {
             TextObj FindObject(string initCode)
             {
-                TextObj obj = default;
+                TextObj obj = new TextObj();
                 string TextObjName = "text";
                 string preVar = TextObjName;
 
@@ -354,7 +367,7 @@ namespace XphoneCreateUserData
                 MessageBox.Show("Foder not existed");
                 return;
             }
-
+            Cursor.Current = Cursors.WaitCursor;
             // Find resource from foder
             FindResource(textBoxTextFoder.Text);
 
@@ -362,6 +375,7 @@ namespace XphoneCreateUserData
             string headerContent = File.ReadAllText(headerFileName);
            
             List<TextObj> textObjs = TextObjectParser.ParseDefineFile(headerContent);
+            setDefault_text(textObjs);
             int numTextObjs = textObjs.Count;
             int listObjLenByByte = TextObjectParser.LengthListTextObject(textObjs) * sizeof(UInt16);
 
@@ -374,6 +388,7 @@ namespace XphoneCreateUserData
 
             for (int srcCnt = 0; srcCnt < SourceFiles.Count; srcCnt++)
             {
+                
                 string sourceFileName = SourceFiles[srcCnt];
                 string srcContent;
                 //List<UInt16[]> textDatas;
@@ -421,7 +436,7 @@ namespace XphoneCreateUserData
             }
 
             File.WriteAllBytes("sys_text.bin", compressedData);
-
+            Cursor.Current = Cursors.Default;
             MessageBox.Show("Genenate success: " + Path.GetFullPath("sys_text.bin"));
         }
 
@@ -435,5 +450,9 @@ namespace XphoneCreateUserData
             Console.WriteLine(s);
         }
 
+        private void textBoxTextFoder_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

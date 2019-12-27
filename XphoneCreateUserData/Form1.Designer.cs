@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.buttonViewCreated = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.buttonOpenFoder = new System.Windows.Forms.Button();
             this.textBoxTextFoder = new System.Windows.Forms.TextBox();
             this.buttonOpenTextFoder = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -61,15 +61,15 @@
             this.buttonViewCreated.UseVisualStyleBackColor = true;
             this.buttonViewCreated.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // button2
+            // buttonOpenFoder
             // 
-            this.button2.Location = new System.Drawing.Point(24, 260);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(159, 23);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.Button2_Click);
+            this.buttonOpenFoder.Location = new System.Drawing.Point(24, 266);
+            this.buttonOpenFoder.Name = "buttonOpenFoder";
+            this.buttonOpenFoder.Size = new System.Drawing.Size(159, 37);
+            this.buttonOpenFoder.TabIndex = 1;
+            this.buttonOpenFoder.Text = "Open";
+            this.buttonOpenFoder.UseVisualStyleBackColor = true;
+            this.buttonOpenFoder.Click += new System.EventHandler(this.Button2_Click);
             // 
             // textBoxTextFoder
             // 
@@ -104,7 +104,7 @@
             this.settingToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(883, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1095, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -179,7 +179,7 @@
             this.ColumeValue3});
             this.dataGridViewVariable.Location = new System.Drawing.Point(234, 103);
             this.dataGridViewVariable.Name = "dataGridViewVariable";
-            this.dataGridViewVariable.Size = new System.Drawing.Size(612, 291);
+            this.dataGridViewVariable.Size = new System.Drawing.Size(849, 553);
             this.dataGridViewVariable.TabIndex = 7;
             // 
             // ColumnVariable
@@ -191,31 +191,31 @@
             // 
             this.ColumeValue1.HeaderText = "Value1";
             this.ColumeValue1.Name = "ColumeValue1";
-            this.ColumeValue1.Width = 150;
+            this.ColumeValue1.Width = 200;
             // 
             // ColumeValue2
             // 
             this.ColumeValue2.HeaderText = "Value 2";
             this.ColumeValue2.Name = "ColumeValue2";
-            this.ColumeValue2.Width = 150;
+            this.ColumeValue2.Width = 200;
             // 
             // ColumeValue3
             // 
             this.ColumeValue3.HeaderText = "Value 3";
             this.ColumeValue3.Name = "ColumeValue3";
-            this.ColumeValue3.Width = 150;
+            this.ColumeValue3.Width = 200;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(883, 450);
+            this.ClientSize = new System.Drawing.Size(1095, 668);
             this.Controls.Add(this.dataGridViewVariable);
             this.Controls.Add(this.buttonGenerate);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonOpenTextFoder);
             this.Controls.Add(this.textBoxTextFoder);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.buttonOpenFoder);
             this.Controls.Add(this.buttonViewCreated);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -232,7 +232,7 @@
         #endregion
 
         private System.Windows.Forms.Button buttonViewCreated;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button buttonOpenFoder;
         private System.Windows.Forms.TextBox textBoxTextFoder;
         private System.Windows.Forms.Button buttonOpenTextFoder;
         private System.Windows.Forms.Label label1;

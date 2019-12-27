@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Diagnostics;
 namespace XphoneCreateUserData
 {
     public partial class Form1 : Form
@@ -25,7 +20,7 @@ namespace XphoneCreateUserData
         const string FILE_LANG_0 = "text-eng";
         const string FILE_LANG_1 = "text-vietnamese";
 
-        List<LanguageConfig> mLanguages = new List<LanguageConfig>(); 
+        List<LanguageConfig> mLanguages = new List<LanguageConfig>();
 
         string HeaderFile;
         List<String> SourceFiles;
@@ -37,7 +32,7 @@ namespace XphoneCreateUserData
 
             SetDefaultLanguage();
 
-            if(File.Exists(FILE_LANG_CFG))
+            if (File.Exists(FILE_LANG_CFG))
             {
                 string s = File.ReadAllText(FILE_LANG_CFG);
                 ReadLanguages(s);
@@ -75,14 +70,14 @@ namespace XphoneCreateUserData
             {
                 line = lines[i].Trim().Replace("*.c", "").Replace("*.cpp", "");
                 string[] s = line.Split(new[] { ":" }, StringSplitOptions.None);
-                if(s != null)
+                if (s != null)
                 {
                     if (s.Length > 1)
                     {
                         string fileName = s[0].Trim();
                         int order = -1;
                         int.TryParse(s[1].Trim(), out order);
-                        if(order >= 0)
+                        if (order >= 0)
                         {
                             LanguageConfig language = new LanguageConfig();
                             language.FileName = fileName;
@@ -93,7 +88,7 @@ namespace XphoneCreateUserData
                 }
             }
 
-            if(Languages.Count > 0)
+            if (Languages.Count > 0)
             {
                 mLanguages = Languages;
             }
@@ -112,6 +107,21 @@ namespace XphoneCreateUserData
                 s += mLanguages[i].FileName + ":" + mLanguages[i].Order;
             }
             File.WriteAllText(FileName, s);
+        }
+
+        private void OpenFolder(string folderPath)
+        {
+            if (Directory.Exists(folderPath))
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.Arguments = folderPath;
+                startInfo.FileName = "explorer.exe";
+                Process.Start(startInfo);
+            }
+            else
+            {
+                MessageBox.Show(string.Format("{0} Directory does not exist!", folderPath));
+            }
         }
 
 
@@ -148,9 +158,9 @@ namespace XphoneCreateUserData
                 for (int i = 0; i < count; i++)
                 {
                     string line = lines[i].Trim();
-                    if(line.StartsWith("init_string"))
+                    if (line.StartsWith("init_string"))
                     {
-                        if(!line.Contains(";"))
+                        if (!line.Contains(";"))
                         {
                             line += lines[i + 1].Trim();
                         }
@@ -183,17 +193,17 @@ namespace XphoneCreateUserData
             TextObj cuurobj;
             string varReadable;
 
-            for(int h = 0; h < numHeaderObjs; h++)
+            for (int h = 0; h < numHeaderObjs; h++)
             {
                 string s0 = "", s1 = "", s2 = "";
                 for (int i = 0; i < numBaseObjs0; i++)
                 {
-                    if(headerObjs[h].Name == textObjs0[i].Name)
+                    if (headerObjs[h].Name == textObjs0[i].Name)
                     {
                         cuurobj = textObjs0[i];
                         varReadable = Encoding.BigEndianUnicode.GetString(cuurobj.ByteArray);
                         s0 = varReadable;
-                        
+
                         break;
                     }
                 }
@@ -229,7 +239,7 @@ namespace XphoneCreateUserData
         public static UInt16[] CombineData(UInt16[] first, UInt16[] second)
         {
             UInt16[] ret = new UInt16[first.Length + second.Length];
-            Buffer.BlockCopy(first, 0, ret, 0, first.Length*sizeof(UInt16));
+            Buffer.BlockCopy(first, 0, ret, 0, first.Length * sizeof(UInt16));
             Buffer.BlockCopy(second, 0, ret, first.Length * sizeof(UInt16), second.Length * sizeof(UInt16));
             return ret;
         }
@@ -250,9 +260,9 @@ namespace XphoneCreateUserData
         int GetOrderByNameFile(string fileNameOnly)
         {
             int order = -1;
-            for(int i = 0; i < mLanguages.Count; i++)
+            for (int i = 0; i < mLanguages.Count; i++)
             {
-                if(fileNameOnly == mLanguages[i].FileName)
+                if (fileNameOnly == mLanguages[i].FileName)
                 {
                     order = mLanguages[i].Order;
                     break;
@@ -295,30 +305,13 @@ namespace XphoneCreateUserData
             }
         }
 
+
+
+
         private void Button2_Click(object sender, EventArgs e)
         {
-            //byte[] data = File.ReadAllBytes("sys_text.bin");
-
-            //int[] numLang = new int[1];
-            //int[] LangSize = new int[1];
-
-            //Buffer.BlockCopy(data, 0, numLang, 0, 4);
-            //Buffer.BlockCopy(data, 4, LangSize, 0, 4);
-            //for(int i = 0; i < numLang[0]; i++)
-            //{
-            //    byte[] lang_header = new byte[100 + 4];
-            //    byte[] lang_content = new byte[LangSize[0]];
-            //    int[] lang_order = new int[1];
-            //    byte[] lang_name = new byte[100];
-               
-            //    Buffer.BlockCopy(data, 4 + 4 + i * (100 + 4 + LangSize[0]), lang_header, 0, lang_header.Length);
-            //    Buffer.BlockCopy(data, 4 + 4 + i * (100 + 4 + LangSize[0]) + lang_header.Length, lang_content, 0, lang_content.Length);
-
-            //    Buffer.BlockCopy(lang_header, 0, lang_order, 0, 4);
-            //    Buffer.BlockCopy(lang_header, 4, lang_name, 0, lang_name.Length);
-            //    File.WriteAllBytes("test.bin", lang_content);
-
-            //}
+            string currDir = Directory.GetCurrentDirectory();
+            OpenFolder(currDir);
         }
 
 
@@ -328,9 +321,9 @@ namespace XphoneCreateUserData
             FolderBrowserDialog dlg = new FolderBrowserDialog();
             dlg.Description = "Select folder contain system text source file";
             dlg.ShowNewFolderButton = true;
-            
+
             DialogResult result = dlg.ShowDialog();
-            if(result == DialogResult.OK)
+            if (result == DialogResult.OK)
             {
                 textBoxTextFoder.Text = dlg.SelectedPath;
             }
@@ -349,7 +342,7 @@ namespace XphoneCreateUserData
          */
         private void ButtonGenerate_Click(object sender, EventArgs e)
         {
-            if(!Directory.Exists(textBoxTextFoder.Text))
+            if (!Directory.Exists(textBoxTextFoder.Text))
             {
                 MessageBox.Show("Foder not existed");
                 return;
@@ -360,7 +353,7 @@ namespace XphoneCreateUserData
 
             string headerFileName = this.HeaderFile;
             string headerContent = File.ReadAllText(headerFileName);
-           
+
             List<TextObj> textObjs = TextObjectParser.ParseDefineFile(headerContent);
             int numTextObjs = textObjs.Count;
             int listObjLenByByte = TextObjectParser.LengthListTextObject(textObjs) * sizeof(UInt16);
@@ -406,7 +399,7 @@ namespace XphoneCreateUserData
                 string fileOnly = Path.GetFileNameWithoutExtension(sourceFileName);
                 byte[] nameFileByArr = new byte[100];
                 byte[] nameTmp = Encoding.ASCII.GetBytes(fileOnly);
-                int[] orderInt = new int[1] { GetOrderByNameFile(Path.GetFileName(fileOnly))};
+                int[] orderInt = new int[1] { GetOrderByNameFile(Path.GetFileName(fileOnly)) };
                 byte[] orderByte = new byte[sizeof(int)];
                 Buffer.BlockCopy(nameTmp, 0, nameFileByArr, 0, nameTmp.Length);
 
